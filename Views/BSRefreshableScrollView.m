@@ -240,7 +240,12 @@
 
 #pragma mark NSView
 
-// Place NSView overrides here – currently empty 😊
+- (id)initWithFrame:(NSRect)frameRect {
+    if (self = [super initWithFrame:frameRect])
+        [self installCustomClipView];
+    return self;
+}
+
 - (void)awakeFromNib {
     [super awakeFromNib];
     [self installCustomClipView];
