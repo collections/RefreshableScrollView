@@ -241,23 +241,32 @@
 #pragma mark NSView
 
 // Place NSView overrides here – currently empty 😊
-
+- (void)awakeFromNib {
+    [super awakeFromNib];
+    [self installCustomClipView];
+}
 
 #pragma mark NSScrollView
 
--(NSClipView *)contentView
-{
-    NSClipView* superClipView = [super contentView];
-    if (![superClipView isKindOfClass:[BSRefreshableClipView class]]) {
-        NSView* documentView = superClipView.documentView;
-        BSRefreshableClipView* clipView = [[BSRefreshableClipView alloc] initWithFrame:superClipView.frame];
-        clipView.documentView = documentView;
-        [self setContentView:clipView];
-        superClipView = clipView;
+- (void)installCustomClipView {
+    if ([self.contentView isKindOfClass:[BSRefreshableClipView class]])
+        return;
+    
+    BSRefreshableClipView *newClipView = [[BSRefreshableClipView alloc] initWithFrame:NSZeroRect];
+    NSView *documentView = self.contentView.documentView;
+    
+    self.contentView = newClipView;
+    newClipView.documentView = documentView;
+    
+    NSArray *views = documentView ? @[documentView, newClipView] : @[newClipView];
+    for (NSView *view in views) {
+        view.translatesAutoresizingMaskIntoConstraints = NO;
+        [view.superview addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:
+                                        @"H:|[view]|" options:0 metrics:nil views:@{@"view": view}]];
+        [view.superview addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:
+                                        @"V:|[view]|" options:0 metrics:nil views:@{@"view": view}]];
     }
-    return superClipView;
 }
-
 
 #pragma mark Property Access
 
