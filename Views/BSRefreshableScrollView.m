@@ -258,19 +258,15 @@
         return;
     
     BSRefreshableClipView *newClipView = [[BSRefreshableClipView alloc] initWithFrame:NSZeroRect];
-    NSView *documentView = self.contentView.documentView;
-    
+
+    newClipView.documentView = self.contentView.documentView;
     self.contentView = newClipView;
-    newClipView.documentView = documentView;
     
-    NSArray *views = documentView ? @[documentView, newClipView] : @[newClipView];
-    for (NSView *view in views) {
-        view.translatesAutoresizingMaskIntoConstraints = NO;
-        [view.superview addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:
-                                        @"H:|[view]|" options:0 metrics:nil views:@{@"view": view}]];
-        [view.superview addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:
-                                        @"V:|[view]|" options:0 metrics:nil views:@{@"view": view}]];
-    }
+    newClipView.translatesAutoresizingMaskIntoConstraints = NO;
+    [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:
+                          @"H:|[view]|" options:0 metrics:nil views:@{@"view": newClipView}]];
+    [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:
+                          @"V:|[view]|" options:0 metrics:nil views:@{@"view": newClipView}]];
 }
 
 #pragma mark Property Access
